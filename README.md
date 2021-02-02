@@ -16,13 +16,17 @@ The end points are
 * Download and install Intel RealSense SDK 2 from [here](https://github.com/IntelRealSense/librealsense)
 
 ## Launching the web service
-Connect your RealSense camera and run the python script cameraWebService  
-`python cameraWebService.py`
-> If you don't have a camera avalable, you can run the script testWebService   
-`python testWebService.py`  
-This uses a recorded camera data which can be downloaded from [here](https://github.com/IntelRealSense/librealsense/blob/master/doc/sample-data.md)
+Connect your RealSense camera and run the python script app.py 
+`python3 app.py`
 
 ## Endpoint Documentation
+### http://localhost:5000
+To start stream of RGB frames from camera  
+* **URL** `/`
+* **Method** `GET`
+* **Success Response:** A JPEG image of the current aligned RGB + Depth frame of camera input. The frame is rendered on a resizable clickable canvas x,y corrected to the current scale.  Note scrolling will create invalid corrected values. 
+* **OnClick** URL `/get3d` called with corrected x,y coordinates 
+
 ### startStream
 To start stream of RGB frames from camera  
 * **URL** `/startStream`
@@ -55,7 +59,8 @@ To get the current 3D real world coordinates in metres of an (x,y) pixel coordin
 * **Error Response:** Invalid coordinate values
 
 ## Acknowledgement
-* The video streaming part was adapted from [Flask Video Streaming](https://github.com/miguelgrinberg/flask-video-streaming) by [Miguel Grinberg](https://github.com/miguelgrinberg) which is under MIT License  
+* Enhanced for D455 and added clickable canvas service to [Web Service for Intel RealSense Camera] (https://github.com/millerhooks/realsense-webservice) by Miller Hooks (https://github.com/millerhooks) which is under MIT License
+* Default template to hold canvas adapted from [Flask Video Streaming](https://github.com/miguelgrinberg/flask-video-streaming) by [Miguel Grinberg](https://github.com/miguelgrinberg) which is under MIT License  
 * [Examples](https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python/examples) provided by [librealsense](https://github.com/IntelRealSense/librealsense) were referred and used.
 
 ## License
