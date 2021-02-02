@@ -1,0 +1,108 @@
+<html>
+  <head>
+    <title>Depth Location Video Stream</title>
+  </head>
+  <style>
+   body {
+        margin: 0px;
+        padding: 0px;
+   }
+  </style>
+  <body>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <style>
+    canvas { width: 100%; height: 100%; outline: 1px solid; }
+  </style>
+  <script>
+      function mousePositionOnCanvas(e) {
+          var el=e.target, c=el;
+          var scaleX = c.width/c.offsetWidth || 1;
+          var scaleY = c.height/c.offsetHeight || 1;
+          
+          if (!isNaN(e.offsetX)) 
+              return { x:e.offsetX*scaleX, y:e.offsetY*scaleY };
+          
+          var x=e.pageX, y=e.pageY;
+          do {
+            x -= el.offsetLeft;
+            y -= el.offsetTop;
+            el = el.offsetParent;
+          } while (el);
+          return { x: x*scaleX, y: y*scaleY };
+      }
+
+      function canvasPos(e) {
+          var p = mousePositionOnCanvas(e);
+          var x=e.pageX, y=e.pageY, el=e.target, c=el;
+          var x2=x, y2=y;
+          do {
+            x -= el.offsetLeft;
+            y -= el.offsetTop;
+            x2 -= el.offsetLeft - el.scrollLeft;
+            y2 -= el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+          } while (el);
+          return {
+              xUnscaled: x, yUnscaled: y,
+              x: p.x, y: p.y,
+              xUnscaledWithScroll: x2, yUnscaledWithScroll: y2, 
+              xWithScroll: x2*(c.width/c.offsetWidth || 1), yWithScroll: y2*(c.height/c.offsetHeight || 1)
+
+          }
+      }
+
+      function canvasPos1(e) {
+          var x=e.pageX, y=e.pageY, el=e.target, c=el;
+          var x2=x, y2=y;
+          do {
+            x -= el.offsetLeft;
+            y -= el.offsetTop;
+            x2 -= el.offsetLeft - el.scrollLeft;
+            y2 -= el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+          } while (el);
+          return {
+              xUnscaled: x, yUnscaled: y,
+              x: x*(c.width/c.offsetWidth || 1), y: y*(c.height/c.offsetHeight || 1),
+              xUnscaledWithScroll: x2, yUnscaledWithScroll: y2, 
+              xWithScroll: x2*(c.width/c.offsetWidth || 1), yWithScroll: y2*(c.height/c.offsetHeight || 1)
+
+          }
+      }
+
+      function $(id){ return document.getElementById(id); }
+      var canvas=$("canvas"), ctx=canvas.getContext("2d");
+      var x = 0
+      var y = 0;
+      var width = 640;
+      var height = 480;
+      var imageObj = new Image();
+      imageObj.onload = function() {
+        ctx.drawImage(imageObj, x, y, width, height);
+      };
+      imageObj.src = '{{ url_for('startStream') }}';
+      // NOTE canvas.getContext("2d") will only get the first frame of the mjpeg stream
+      canvas.onclick = function(e){
+          var p = canvasPos(e);
+          var url = "/get3d?" + "x=" + Math.round(p.x) + "&" + "y=" + Math.round(p.y);
+          var win = window.open('','');
+          win.location.href = url;
+          win=null;
+      };
+    
+      canvas.onmousemove = function(e) {
+          var p = canvasPos(e);
+          $("mouse").innerHTML = 
+              "scaled: "+Math.round(p.x)+","+Math.round(p.y)
+              +"<br>unscaled: "+p.xUnscaled+","+p.yUnscaled
+              +"<br>with scroll offset: "+Math.round(p.xWithScroll)+","+Math.round(p.yWithScroll)
+              +"<br>unscaled with scroll offset: "+p.xUnscaledWithScroll+","+p.yUnscaledWithScroll;
+      };
+  </script>
+  <div id="display">
+      Note that taking scrolling into account result in wrong positions when the window is scrolled.
+      <div id="mouse"></div>
+  </div>
+
+  </body>
+</html>
