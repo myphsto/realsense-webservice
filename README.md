@@ -1,6 +1,7 @@
 # Web Service for Intel RealSense Camera
 This is a web service written in python Flask for RealSense Cameras which are compatible with Intel RealSense SDK 2.0.  
 The end points are
+* default: Get the current aligned frame click to call get3d 
 * startStream: Stream RGB frames from camera
 * getImage: Get the current RGB frame
 * getDepth: Get depth of a given point in RGB image
